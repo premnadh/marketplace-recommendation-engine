@@ -2,7 +2,7 @@ from serpapi import GoogleSearch
 
 FALLBACK_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
 
-API_KEY = "YOUR_SERPAPI_KEY"
+API_KEY = "1b02ea2fa9e8fe14663389532a54d5b62a99db084ed802e6a30ec230d535e583"
 
 
 def fetch_image(product_title):
