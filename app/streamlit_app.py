@@ -17,6 +17,9 @@ st.set_page_config(
 )
 
 
+# -----------------------------
+# UI STYLE
+# -----------------------------
 st.markdown("""
 <style>
 
@@ -76,24 +79,49 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# -----------------------------
+# HEADER
+# -----------------------------
 st.markdown("<div class='main-title'>🛍 Marketplace Recommendation Engine</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>Hybrid Recommender • Collaborative Filtering • Product Similarity</div>", unsafe_allow_html=True)
 
 
+# -----------------------------
+# LOAD RECOMMENDER
+# -----------------------------
 @st.cache_resource
 def load_engine():
-    return HybridRecommender(
-        "data/products.csv",
-        "data/interactions.csv"
-    )
+    try:
+        return HybridRecommender(
+            "data/products.csv",
+            "data/interactions.csv"
+        )
+    except Exception as e:
+        st.error(f"Engine loading failed: {e}")
+        return None
+
 
 engine = load_engine()
 
+if engine is None:
+    st.stop()
 
-products_df = pd.read_csv("data/products.csv")
+
+# -----------------------------
+# LOAD PRODUCTS
+# -----------------------------
+try:
+    products_df = pd.read_csv("data/products.csv")
+except Exception as e:
+    st.error(f"Products file failed to load: {e}")
+    st.stop()
+
 titles = products_df["title"].dropna().unique().tolist()
 
 
+# -----------------------------
+# TRENDING SEARCHES
+# -----------------------------
 st.markdown("### 🔥 Trending Searches")
 
 trend_cols = st.columns(5)
@@ -113,6 +141,9 @@ for i, trend in enumerate(trending):
         selected_trend = trend
 
 
+# -----------------------------
+# SEARCH BAR
+# -----------------------------
 st.markdown("### 🔎 Search Products")
 
 st.markdown("<div class='search-box'>", unsafe_allow_html=True)
@@ -131,16 +162,23 @@ if selected_trend:
     query = selected_trend
 
 
+# -----------------------------
+# RECOMMENDATION ENGINE
+# -----------------------------
 if query:
 
     with st.spinner("Finding best recommendations..."):
         time.sleep(1)
 
-        results = engine.recommend(
-            user_id=1,
-            product_title=query,
-            top_n=20
-        )
+        try:
+            results = engine.recommend(
+                user_id=1,
+                product_title=query,
+                top_n=20
+            )
+        except Exception as e:
+            st.error(f"Recommendation error: {e}")
+            results = None
 
     if results is None or len(results) == 0:
 
@@ -154,7 +192,10 @@ if query:
 
         for i, (_, row) in enumerate(results.iterrows()):
 
-            img = fetch_image(row["title"])
+            try:
+                img = fetch_image(row["title"])
+            except:
+                img = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
 
             with cols[i % 4]:
 
@@ -167,7 +208,7 @@ if query:
                     unsafe_allow_html=True
                 )
 
-                st.caption(row["category"])
+                st.caption(row.get("category", ""))
 
                 st.markdown(
                     "<div class='rating'>⭐⭐⭐⭐☆</div>",
@@ -183,9 +224,9 @@ if query:
                     f"""
                     <div class='score'>
                     <b>Recommended Because</b><br>
-                    Similarity Score: {row['similarity_score']}<br>
-                    User Preference Score: {row['collaborative_score']}<br>
-                    Final Hybrid Score: {row['final_score']}
+                    Similarity Score: {row.get('similarity_score', 0):.2f}<br>
+                    User Preference Score: {row.get('collaborative_score', 0):.2f}<br>
+                    Final Hybrid Score: {row.get('final_score', 0):.2f}
                     </div>
                     """,
                     unsafe_allow_html=True
