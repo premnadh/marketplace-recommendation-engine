@@ -1,21 +1,21 @@
 from serpapi import GoogleSearch
+import os
 
 FALLBACK_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
 
-API_KEY = "1b02ea2fa9e8fe14663389532a54d5b62a99db084ed802e6a30ec230d535e583"
+API_KEY = os.getenv("SERPAPI_KEY")
 
 
 def fetch_image(product_title):
     """
     Fetch product image using Google Shopping results.
-    This usually returns the exact product model image.
     """
 
     try:
         params = {
             "engine": "google_shopping",
             "q": product_title,
-            "api_key": "1b02ea2fa9e8fe14663389532a54d5b62a99db084ed802e6a30ec230d535e583",
+            "api_key": API_KEY,
             "num": 1
         }
 
