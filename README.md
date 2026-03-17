@@ -54,8 +54,8 @@ Top-N Recommendations
 ```mermaid
 graph TD
 User[User Query] --> History[User Interaction Data]
-History --> CF[Collaborative Filtering (SVD)]
-User --> CB[Content-Based Filtering (TF-IDF)]
+History --> CF["Collaborative Filtering - SVD"]
+User --> CB["Content-Based Filtering - TF-IDF"]
 CF --> Hybrid[Hybrid Scoring]
 CB --> Hybrid
 Hybrid --> Output[Top-N Recommendations]
@@ -160,7 +160,7 @@ Ranking Model (SVD + Hybrid Score)
 Top-N Results
 ```
 
-This mimics production systems used in e-commerce platforms.
+This mirrors how modern e-commerce systems rank search results.
 
 ---
 
@@ -175,7 +175,13 @@ Recommendation quality can be evaluated using:
 | MAP | Mean Average Precision |
 | NDCG | Ranking quality |
 
-These metrics measure how effectively the system ranks relevant products.
+Example (simulated):
+
+```
+Precision@10: 0.82  
+Recall@10: 0.74  
+NDCG@10: 0.86  
+```
 
 ---
 
@@ -199,14 +205,14 @@ Returns top-N ranked recommendations.
 
 - Combines collaborative + content-based filtering  
 - Improves recommendation accuracy  
-- Handles cold-start problems better  
+- Handles cold-start problems  
 
 ---
 
 ## 🖥️ Interactive Web Interface
 
-- Search-based recommendations  
-- Trending products  
+- Product search  
+- Trending recommendations  
 - Product cards with images  
 - External purchase links  
 
@@ -216,7 +222,7 @@ Returns top-N ranked recommendations.
 
 - Price filtering  
 - Category filtering  
-- Sorting options:
+- Sorting:
   - Best Match  
   - Price Low → High  
   - Price High → Low  
@@ -278,8 +284,8 @@ Potential improvements:
 
 - Redis caching for frequent queries  
 - FAISS / vector database for similarity search  
-- Distributed recommendation services  
-- Microservices architecture  
+- Microservices-based recommendation system  
+- Distributed model serving  
 
 ---
 
@@ -343,9 +349,9 @@ http://localhost:8501
 
 - Deep learning recommendation models  
 - Real-time personalization  
-- User session tracking  
+- Session-based recommendations  
 - Advanced ranking algorithms  
-- Deployment on cloud infrastructure  
+- Cloud deployment (AWS / GCP)  
 
 ---
 
