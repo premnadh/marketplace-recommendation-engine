@@ -1,5 +1,5 @@
-# 🛍️ Marketplace Recommendation Engine
-### Hybrid AI Recommendation System for Product Discovery
+# 🛍️ Marketplace Recommendation Engine  
+### Hybrid AI Recommendation System for Smart Product Discovery
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Web_App-red)
@@ -7,48 +7,175 @@
 ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-ML-orange)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-An **AI-powered product recommendation system** that simulates how modern e-commerce platforms suggest relevant products to users.
+An AI-powered recommendation system that simulates how modern e-commerce platforms generate **personalized product suggestions**.
 
-The system combines **Collaborative Filtering and Content-Based Similarity Search** to generate personalized product recommendations and presents them through an **interactive Streamlit web interface**.
+This project combines:
+
+- **Collaborative Filtering (SVD Matrix Factorization)**
+- **Content-Based Filtering (TF-IDF + Cosine Similarity)**
+
+into a **Hybrid Recommendation Engine**, delivered through an interactive **Streamlit application**.
 
 ---
 
 # 🎯 Project Objective
 
-The goal of this project is to build a **production-style recommendation engine** similar to those used by modern marketplace platforms.
+Design and implement a **production-style recommendation system** that:
 
-Users can:
-
-- Search for a product
-- Receive **AI-generated recommendations**
-- View similar products with images
-- Navigate to purchase pages
-- Explore product discovery through a recommendation system
+- Learns user preferences  
+- Finds similar products  
+- Ranks results intelligently  
+- Simulates real-world product discovery systems  
 
 ---
 
-# 🧠 Recommendation System Architecture
+# 🏗️ System Architecture
 
-The system uses a **Hybrid Recommendation Model** combining two approaches.
+The system follows a modular recommendation pipeline:
+
+```
+User Query / Interaction
+        ↓
+User History Extraction
+        ↓
+Candidate Generation
+   ├─ Content-Based Filtering (TF-IDF)
+   └─ Collaborative Filtering (SVD)
+        ↓
+Hybrid Ranking Engine
+        ↓
+Top-N Recommendations
+```
+
+---
+
+# 🔄 Recommendation Pipeline
+
+```mermaid
+graph TD
+User[User Query] --> History[User Interaction Data]
+History --> CF[Collaborative Filtering (SVD)]
+User --> CB[Content-Based Filtering (TF-IDF)]
+CF --> Hybrid[Hybrid Scoring]
+CB --> Hybrid
+Hybrid --> Output[Top-N Recommendations]
+```
+
+---
+
+# ⚙️ Hybrid Scoring Formula
+
+Final ranking score is computed as:
+
+```
+Final Score =
+0.6 × Collaborative Score
++
+0.4 × Content Similarity Score
+```
+
+This balances:
+
+- **User behavior (collaborative filtering)**  
+- **Product similarity (content-based filtering)**  
+
+---
+
+# 📊 Dataset
+
+Dataset derived from:
+
+Mercari Price Suggestion Challenge (Kaggle)  
+https://www.kaggle.com/c/mercari-price-suggestion-challenge
+
+### Dataset Characteristics
+
+- Users: ~10,000 (simulated interactions)  
+- Products: ~2,500+  
+- Features:
+  - Product title  
+  - Category  
+  - Description  
+  - Price  
+
+---
+
+# ⚙️ Data Preparation
+
+Run:
+
+```
+python prepare_products.py
+```
+
+Generates:
+
+```
+data/products.csv
+data/interactions.csv
+```
+
+### Feature Engineering
+
+- Text preprocessing (cleaning titles/descriptions)  
+- TF-IDF vectorization of product text  
+- User-item interaction matrix construction  
+- Normalisation of product metadata  
+
+These steps enable both **content similarity** and **collaborative learning**.
+
+---
+
+# 🤖 Recommendation Models
+
+## 1️⃣ Content-Based Filtering
+
+- TF-IDF vectorisation  
+- Cosine similarity  
+- Captures product similarity  
+
+## 2️⃣ Collaborative Filtering
+
+- SVD (matrix factorization using Surprise library)  
+- Learns user-item interaction patterns  
+
+## 3️⃣ Hybrid Recommendation
+
+- Combines both approaches  
+- Produces more accurate and personalized results  
+
+---
+
+# 🔎 Search & Ranking System
+
+The system simulates a real-world search ranking pipeline:
 
 ```
 User Query
-     ↓
-Product Similarity Engine
-(TF-IDF + Cosine Similarity)
-     ↓
-Collaborative Filtering
-(SVD Matrix Factorization)
-     ↓
-Hybrid Scoring System
-     ↓
-Top-N Product Recommendations
+    ↓
+Candidate Retrieval (TF-IDF similarity)
+    ↓
+Ranking Model (SVD + Hybrid Score)
+    ↓
+Top-N Results
 ```
 
-This hybrid approach improves recommendation quality by combining:
+This mimics production systems used in e-commerce platforms.
 
-- User behavior patterns
-- Product similarity relationships
+---
+
+# 📈 Evaluation Metrics
+
+Recommendation quality can be evaluated using:
+
+| Metric | Description |
+|------|------|
+| Precision@K | Relevance of top-K recommendations |
+| Recall@K | Coverage of relevant items |
+| MAP | Mean Average Precision |
+| NDCG | Ranking quality |
+
+These metrics measure how effectively the system ranks relevant products.
 
 ---
 
@@ -56,7 +183,7 @@ This hybrid approach improves recommendation quality by combining:
 
 ## 🔎 Smart Product Search
 
-Users can search products such as:
+Users can search queries such as:
 
 ```
 Nike running shoes
@@ -64,95 +191,55 @@ Jordan sneakers
 Adidas ultraboost
 ```
 
-The system returns **20 recommended products** based on similarity and user interaction patterns.
+Returns top-N ranked recommendations.
 
 ---
 
 ## 🤖 Hybrid Recommendation Engine
 
-Two recommendation algorithms are combined.
-
-### Content-Based Filtering
-
-- TF-IDF vectorization
-- Cosine similarity
-- Finds similar products based on descriptions
-
-### Collaborative Filtering
-
-- Matrix factorization using SVD
-- Learns patterns from user-item interactions
-
-Final recommendation score:
-
-```
-Final Score =
-0.6 × Collaborative Score
-+
-0.4 × Similarity Score
-```
+- Combines collaborative + content-based filtering  
+- Improves recommendation accuracy  
+- Handles cold-start problems better  
 
 ---
 
-# 🖥️ Interactive Web Interface
+## 🖥️ Interactive Web Interface
 
-A modern UI built with **Streamlit** allows users to:
-
-- Search products
-- View recommendations in a **grid layout**
-- See product images
-- Access purchase links
-
-The UI simulates a **marketplace product discovery page**.
+- Search-based recommendations  
+- Trending products  
+- Product cards with images  
+- External purchase links  
 
 ---
 
-# 🛒 External Purchase Links
+## 🎯 Advanced Features
 
-Each recommendation includes a **purchase link** that redirects to an online marketplace search.
+- Price filtering  
+- Category filtering  
+- Sorting options:
+  - Best Match  
+  - Price Low → High  
+  - Price High → Low  
 
-Example:
+---
+
+# 📈 Example Workflow
 
 ```
-Nike Running Shoes
-Price: $45
-Category: Athletic
-
-Buy Product → Opens marketplace search
+User searches: "Nike running shoes"
+        ↓
+TF-IDF retrieves similar products
+        ↓
+SVD ranks based on user interactions
+        ↓
+Hybrid score computed
+        ↓
+Top recommendations displayed
 ```
 
 ---
 
-# 📊 Dataset
-
-This project uses a dataset derived from the **Mercari Price Suggestion Dataset**.
-
-Dataset contains:
-
-- Product titles
-- Categories
-- Descriptions
-- Prices
-
-Additional **synthetic user interactions** were generated to train the collaborative filtering model.
-
----
-
-# 🛠️ Tech Stack
-
-| Category | Tools |
-|---|---|
-| Language | Python |
-| Machine Learning | Scikit-learn |
-| Recommendation Algorithm | TF-IDF + Cosine Similarity + SVD |
-| Web Interface | Streamlit |
-| Data Processing | Pandas |
-| Numerical Computing | NumPy |
-| Version Control | Git & GitHub |
-
----
-
-# ⚙️ Project Architecture
+# 🧩 Project Structure
 
 ```
 marketplace-recommendation-engine
@@ -171,9 +258,6 @@ marketplace-recommendation-engine
 │   └── interactions.csv
 │
 ├── tests
-│   ├── test_similarity.py
-│   ├── test_collaborative.py
-│   └── test_hybrid.py
 │
 ├── prepare_products.py
 ├── requirements.txt
@@ -182,45 +266,62 @@ marketplace-recommendation-engine
 
 ---
 
+# ⚡ Performance Considerations
+
+To support scalability:
+
+- Precomputed TF-IDF vectors for fast similarity search  
+- Efficient matrix factorization using SVD  
+- Batch recommendation generation  
+
+Potential improvements:
+
+- Redis caching for frequent queries  
+- FAISS / vector database for similarity search  
+- Distributed recommendation services  
+- Microservices architecture  
+
+---
+
 # ▶️ Run Locally
 
-Clone repository
+Clone:
 
 ```
-git clone https://github.com/yourusername/marketplace-recommendation-engine.git
+git clone https://github.com/premnadh/marketplace-recommendation-engine.git
 ```
 
-Navigate into project
+Navigate:
 
 ```
 cd marketplace-recommendation-engine
 ```
 
-Create virtual environment
+Create virtual environment:
 
 ```
-python3 -m venv venv
+python3.11 -m venv venv
 ```
 
-Activate environment (Mac / Linux)
+Activate:
 
 ```
 source venv/bin/activate
 ```
 
-Install dependencies
+Install dependencies:
 
 ```
 pip install -r requirements.txt
 ```
 
-Run application
+Run application:
 
 ```
 streamlit run app/streamlit_app.py
 ```
 
-Open in browser
+Open:
 
 ```
 http://localhost:8501
@@ -228,40 +329,23 @@ http://localhost:8501
 
 ---
 
-# 📈 Example Workflow
-
-```
-User searches: "Nike running shoes"
-        ↓
-System finds similar products
-        ↓
-Collaborative filtering adjusts rankings
-        ↓
-Top 20 recommendations displayed
-        ↓
-User explores recommended products
-```
-
----
-
 # 🌟 Key Highlights
 
-- Hybrid recommendation system
-- Machine learning powered product discovery
-- Interactive web application
-- Real marketplace dataset
-- Scalable recommendation architecture
+- Hybrid recommendation system  
+- Real machine learning implementation  
+- Search + ranking pipeline  
+- Modular architecture  
+- Interactive UI  
 
 ---
 
 # 🚀 Future Improvements
 
-- Real-time recommendation updates
-- Vector search using FAISS
-- User behavior tracking
-- Product rating prediction
-- Cloud deployment
-- Full e-commerce frontend integration
+- Deep learning recommendation models  
+- Real-time personalization  
+- User session tracking  
+- Advanced ranking algorithms  
+- Deployment on cloud infrastructure  
 
 ---
 
@@ -269,12 +353,8 @@ User explores recommended products
 
 **Prem Nadh Gajula**
 
-Aspiring **Data Scientist / Machine Learning Engineer**
+Aspiring **Data Scientist | Machine Learning Engineer | Backend Developer**
 
-Interested in:
+---
 
-- AI systems
-- recommendation engines
-- scalable data platforms
-
-If you find this project useful, please ⭐ the repository!
+⭐ If you found this project useful, consider starring the repository!

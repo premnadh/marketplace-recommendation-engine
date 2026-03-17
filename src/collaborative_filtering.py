@@ -1,59 +1,61 @@
 import pandas as pd
-from sklearn.decomposition import TruncatedSVD
+from surprise import Dataset, Reader, SVD
 
 
 class CollaborativeFilteringEngine:
 
     def __init__(self, interactions_path):
+
         print("Loading interaction data...")
 
         interactions = pd.read_csv(interactions_path)
 
-        # Create user-item interaction matrix
-        self.user_item_matrix = interactions.pivot_table(
-            index="user_id",
-            columns="item_id",
-            values="rating",
-            fill_value=0
+        # ✅ Clean column names (important for real-world data)
+        interactions.columns = interactions.columns.str.strip().str.lower()
+
+        # ✅ Fix common column mismatch
+        if "product_id" in interactions.columns:
+            interactions = interactions.rename(columns={"product_id": "item_id"})
+
+        # ✅ Validate required columns
+        required_cols = ["user_id", "item_id", "rating"]
+        if not all(col in interactions.columns for col in required_cols):
+            raise ValueError(
+                f"CSV must contain columns: {required_cols}, found: {interactions.columns.tolist()}"
+            )
+
+        print("Interactions shape:", interactions.shape)
+        print("Unique users:", interactions["user_id"].nunique())
+        print("Unique items:", interactions["item_id"].nunique())
+
+        # ✅ Prepare Surprise dataset
+        reader = Reader(rating_scale=(1, 5))
+
+        data = Dataset.load_from_df(
+            interactions[["user_id", "item_id", "rating"]],
+            reader
         )
 
-        print("Training collaborative filtering model...")
+        trainset = data.build_full_trainset()
 
-        self.svd = TruncatedSVD(n_components=20, random_state=42)
+        print("Training SVD model...")
 
-        # Latent user features
-        self.user_factors = self.svd.fit_transform(self.user_item_matrix)
+        self.model = SVD()
+        self.model.fit(trainset)
+
+        self.interactions = interactions
 
         print("Collaborative filtering ready.")
 
-    def recommend(self, user_id, top_n=10):
+    def recommend(self, user_id, items, top_n=10):
 
-        # Cold start handling
-        if user_id not in self.user_item_matrix.index:
-            print("User not found, returning empty recommendations.")
-            return []
+        scores = []
 
-        # Get index position
-        user_idx = self.user_item_matrix.index.get_loc(user_id)
+        for item in items:
+            pred = self.model.predict(user_id, item)
+            scores.append((item, pred.est))
 
-        # Latent user representation
-        user_vector = self.user_factors[user_idx]
+        # ✅ Sort by predicted rating
+        scores = sorted(scores, key=lambda x: x[1], reverse=True)
 
-        # Reconstruct predicted ratings
-        predicted_ratings = self.svd.inverse_transform(
-            user_vector.reshape(1, -1)
-        )[0]
-
-        # Rank items
-        recommendations = pd.Series(
-            predicted_ratings,
-            index=self.user_item_matrix.columns
-        )
-
-        return (
-            recommendations
-            .sort_values(ascending=False)
-            .head(top_n)
-            .index
-            .tolist()
-        )
+        return [item for item, _ in scores[:top_n]]
